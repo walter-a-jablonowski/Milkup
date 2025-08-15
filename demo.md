@@ -13,8 +13,8 @@ This is a **live markdown editor** that renders content *as you type*.
 - **Bold text** and *italic text*
 - ~~Strikethrough text~~
 - `inline code`
-- https://example.com" class="milkup-link">Links and auto-links: https://github.com
-- !https://via.placeholder.com/300x200/007acc/white?text=Demo+Image" class="milkup-link">Images
+- [Links](https://example.com) and auto-links: https://github.com
+- ![Images](https://via.placeholder.com/300x200/007acc/white?text=Demo+Image)
 
 ### Lists
 
