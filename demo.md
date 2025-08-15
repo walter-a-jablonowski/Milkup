@@ -1,4 +1,4 @@
-#title: Milkup Demo
+title: Milkup Demo
 author: Walter
 date: 2025-08-15
 
