@@ -445,14 +445,14 @@ class Milkup
     // Inline code
     text = text.replace(/`(.+?)`/g, '<code class="milkup-code">`$1`</code>');
     
-    // Links
-    text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="milkup-link">$1</a>');
-    
-    // Auto-links
-    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" class="milkup-link">$1</a>');
-    
-    // Images
+    // Images (process first to avoid conflicts)
     text = text.replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1" class="milkup-image">');
+    
+    // Links (keep markdown syntax visible)
+    text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="milkup-link">[$1]($2)</a>');
+    
+    // Auto-links (avoid matching already processed links)
+    text = text.replace(/(^|[^"(])(https?:\/\/[^\s<>"()]+)/g, '$1<a href="$2" class="milkup-link">$2</a>');
     
     return text;
   }
