@@ -14,7 +14,8 @@ This is a **live markdown editor** that renders content *as you type*.
 - ~~Strikethrough text~~
 - `inline code`
 - [Links](https://example.com) and auto-links: https://github.com
-- ![Images](https://via.placeholder.com/300x200/007acc/white?text=Demo+Image)
+
+![Images](https://picsum.photos/300/200)
 
 ### Lists
 
