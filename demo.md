@@ -1,6 +1,8 @@
+---
 title: Milkup Demo
 author: Walter
 date: 2025-08-15
+---
 
 # Welcome to Milkup
 
