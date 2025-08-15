@@ -20,15 +20,15 @@ This is a **live markdown editor** that renders content *as you type*.
 ### Lists
 
 - Unordered list item 1
-- Unordered list item 2- Nested item
-
-- Nested item 2
+- Unordered list item 2
+  - Nested item
+  - Nested item 2
 - Back to main level
 
 1. Ordered list item 1
 2. Ordered list item 2
-1. Nested ordered item
-2. Nested ordered item 2
+  1. Nested ordered item
+  2. Nested ordered item 2
 3. Back to main level
 
 ### Blockquo
