@@ -1,9 +1,9 @@
 
-I want to write a reusable markdown editor libary in javascript that support live editing.
+I want to write a reusable markdown editor library in javascript that support live editing.
 
 When the user typed a markdown syntax the editor component renders it immediately in HTML using the appropriate html tags.
 
-Support all ususal markdown syntax (also syntax that is widely used but missing in the original makrdown spec). Beside markdown links also support rendering of normal hyperlinks.
+Support all usual markdown syntax (also syntax that is widely used but missing in the original markdown spec). Beside markdown links also support rendering of normal hyperlinks.
 
 For text formatting and code blocks syntax like headers keep the markdown syntax signs visible for edit. When the user changes the syntax, remove or change the rendering.
 
