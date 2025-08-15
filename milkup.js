@@ -10,7 +10,7 @@ class Milkup
     };
     
     this.content = '';
-    this.isEditing = false;
+    this.editingElement = null;
     this.contextMenu = null;
     this.pressTimer = null;
     
@@ -36,9 +36,9 @@ class Milkup
   handleInput( e )
   {
     // Skip if we're in edit mode
-    if( this.container.querySelector('.milkup-edit-input') ) return;
+    if( this.editingElement ) return;
     
-    this.content = this.extractStructuredContent();
+    this.content = this.container.textContent;
     this.renderWithCursorPreservation();
     
     if( this.options.autoSave )
@@ -128,15 +128,13 @@ class Milkup
     input.value = markdown;
     input.className = 'milkup-edit-input';
     
-    // Store original element for cancel
-    input._originalElement = element;
-    input._isEditing = true;
+    this.editingElement = element;
     
     input.addEventListener('keydown', ( e ) => {
       if( e.key === 'Enter' )
       {
         e.preventDefault();
-        this.saveEdit( input );
+        this.saveEdit( input, markdown );
       }
       else if( e.key === 'Escape' )
       {
@@ -145,38 +143,29 @@ class Milkup
       }
     });
     
-    // Remove blur event to prevent premature saves
-    
     element.parentNode.replaceChild( input, element );
     input.focus();
     input.select();
   }
   
-  saveEdit( input )
+  saveEdit( input, originalMarkdown )
   {
-    if( ! input._isEditing ) return;
-    
     const newMarkdown = input.value;
-    input._isEditing = false;
     
-    // Replace input with temporary text node
-    const textNode = document.createTextNode( newMarkdown );
-    input.parentNode.replaceChild( textNode, input );
+    // Update content by replacing the original markdown
+    this.content = this.content.replace( originalMarkdown, newMarkdown );
     
-    // Trigger full re-render
-    this.content = this.extractStructuredContent();
+    // Clear edit state and re-render
+    this.editingElement = null;
+    input.remove();
     this.render();
   }
   
   cancelEdit( input )
   {
-    if( ! input._isEditing ) return;
-    
-    const originalElement = input._originalElement;
-    input._isEditing = false;
-    
     // Restore original element
-    input.parentNode.replaceChild( originalElement, input );
+    input.parentNode.replaceChild( this.editingElement, input );
+    this.editingElement = null;
   }
   
   exitEditMode()
@@ -239,45 +228,6 @@ class Milkup
   }
   
   
-  extractStructuredContent()
-  {
-    let content = '';
-    const children = this.container.children;
-    
-    for( let i = 0; i < children.length; i++ )
-    {
-      const child = children[i];
-      
-      if( child.classList.contains('milkup-yaml-line') )
-      {
-        // YAML line - preserve as is with newline
-        content += child.textContent + '\n';
-      }
-      else
-      {
-        // Regular content - use textContent
-        content += child.textContent + '\n';
-      }
-    }
-    
-    // Handle any remaining text nodes
-    const walker = document.createTreeWalker(
-      this.container,
-      NodeFilter.SHOW_TEXT,
-      node => {
-        // Only include text nodes that are direct children or not in structured elements
-        return node.parentElement === this.container ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-      }
-    );
-    
-    let node;
-    while( node = walker.nextNode() )
-    {
-      content += node.textContent;
-    }
-    
-    return content.trim();
-  }
   
   renderWithCursorPreservation()
   {
@@ -359,13 +309,6 @@ class Milkup
     const lines = this.content.split('\n');
     let html = '';
     let inYamlFrontMatter = false;
-    let yamlStartFound = false;
-    
-    // Check if content starts with YAML front matter
-    if( lines.length > 0 && lines[0].trim() === '---' )
-    {
-      yamlStartFound = true;
-    }
     
     for( let i = 0; i < lines.length; i++ )
     {
@@ -374,7 +317,7 @@ class Milkup
       // YAML front matter detection
       if( line.trim() === '---' )
       {
-        if( i === 0 && yamlStartFound )
+        if( i === 0 )
         {
           // Start of YAML front matter
           inYamlFrontMatter = true;
@@ -503,17 +446,6 @@ class Milkup
     return element.textContent;
   }
   
-  parseMarkdown( markdown )
-  {
-    const div = document.createElement('div');
-    div.innerHTML = this.renderLine( markdown );
-    return div.firstChild;
-  }
-  
-  updateContent()
-  {
-    this.content = this.container.textContent;
-  }
   
   escapeHtml( text )
   {
