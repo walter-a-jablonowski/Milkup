@@ -35,7 +35,7 @@ class Milkup
   
   handleInput( e )
   {
-    this.content = this.container.textContent;
+    this.content = this.extractContent();
     this.renderWithCursorPreservation();
     
     if( this.options.autoSave )
@@ -217,6 +217,37 @@ class Milkup
     }
   }
   
+  extractContent()
+  {
+    let content = '';
+    const yamlBlock = this.container.querySelector('.milkup-yaml-frontmatter');
+    
+    if( yamlBlock )
+    {
+      // Reconstruct YAML with delimiters
+      content = '---\n' + yamlBlock.textContent + '\n---\n';
+      
+      // Get remaining content after YAML block
+      const walker = document.createTreeWalker(
+        this.container,
+        NodeFilter.SHOW_TEXT,
+        node => yamlBlock.contains(node) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+      );
+      
+      let node;
+      while( node = walker.nextNode() )
+      {
+        content += node.textContent;
+      }
+    }
+    else
+    {
+      content = this.container.textContent;
+    }
+    
+    return content;
+  }
+  
   renderWithCursorPreservation()
   {
     // Save cursor position
@@ -314,7 +345,7 @@ class Milkup
       {
         if( line.trim() === '---' )
         {
-          html += `<div class="milkup-yaml-frontmatter">${this.escapeHtml(yamlContent)}</div>`;
+          html += `<div class="milkup-yaml-frontmatter" contenteditable="true">${this.escapeHtml(yamlContent.trim())}</div>`;
           inYamlFrontMatter = false;
           yamlContent = '';
           continue;
