@@ -65,7 +65,7 @@ class Milkup
   
   handleContextMenu( e )
   {
-    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr');
+    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr, .milkup-yaml-block');
     if( target )
     {
       e.preventDefault();
@@ -75,7 +75,7 @@ class Milkup
   
   handleTouchStart( e )
   {
-    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr');
+    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr, .milkup-yaml-block');
     if( target )
     {
       this.pressTimer = setTimeout(() => {
@@ -308,43 +308,43 @@ class Milkup
   {
     const lines = this.content.split('\n');
     let html = '';
-    let inYamlFrontMatter = false;
+    let i = 0;
     
-    for( let i = 0; i < lines.length; i++ )
+    // Check for YAML front matter at the beginning
+    if( lines[0] && lines[0].trim() === '---' )
     {
-      const line = lines[i];
-      
-      // YAML front matter detection
-      if( line.trim() === '---' )
+      // Find the end of YAML front matter
+      let yamlEndIndex = -1;
+      for( let j = 1; j < lines.length; j++ )
       {
-        if( i === 0 )
+        if( lines[j].trim() === '---' )
         {
-          // Start of YAML front matter
-          inYamlFrontMatter = true;
-          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
+          yamlEndIndex = j;
+          break;
         }
-        else if( inYamlFrontMatter )
-        {
-          // End of YAML front matter
-          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
-          inYamlFrontMatter = false;
-        }
-        else
-        {
-          // Regular horizontal rule
-          html += this.renderLine( line );
-        }
-        continue;
       }
       
-      // YAML content lines
-      if( inYamlFrontMatter )
+      if( yamlEndIndex > 0 )
       {
-        html += `<div class="milkup-yaml-line">${this.escapeHtml(line)}</div>`;
-        continue;
+        // Render YAML front matter as a single block
+        const yamlContent = lines.slice(0, yamlEndIndex + 1).join('\n');
+        html += `<div class="milkup-yaml-block" data-original="${this.escapeHtml(yamlContent)}">`;
+        
+        for( let k = 0; k <= yamlEndIndex; k++ )
+        {
+          const cssClass = (k === 0 || k === yamlEndIndex) ? 'milkup-yaml-delimiter' : '';
+          html += `<div class="milkup-yaml-line ${cssClass}">${this.escapeHtml(lines[k])}</div>`;
+        }
+        
+        html += '</div>';
+        i = yamlEndIndex + 1;
       }
-      
-      html += this.renderLine( line ) + '\n';
+    }
+    
+    // Render the rest of the content
+    for( ; i < lines.length; i++ )
+    {
+      html += this.renderLine( lines[i] ) + '\n';
     }
     
     this.container.innerHTML = html;
@@ -416,21 +416,30 @@ class Milkup
     text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="milkup-link">$1</a>');
     
     // Auto-links (avoid matching already processed links)
-    text = text.replace(/(^|[^"(])(https?:\/\/[^\s<>"()]+)/g, '$1<a href="$2" class="milkup-link">$2</a>');
+    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" class="milkup-link">$1</a>');
     
     return text;
   }
   
-  getMarkdownForElement( element )
+  getElementMarkdown( element )
   {
+    if( element.classList.contains('milkup-yaml-block') )
+    {
+      return element.getAttribute('data-original') || element.textContent;
+    }
+    
     if( element.classList.contains('milkup-link') )
     {
-      return `[${element.textContent}](${element.href})`;
+      const href = element.getAttribute('href');
+      const text = element.textContent;
+      return `[${text}](${href})`;
     }
     
     if( element.classList.contains('milkup-image') )
     {
-      return `![${element.alt}](${element.src})`;
+      const src = element.getAttribute('src');
+      const alt = element.getAttribute('alt') || '';
+      return `![${alt}](${src})`;
     }
     
     if( element.classList.contains('milkup-blockquo') )
