@@ -65,7 +65,7 @@ class Milkup
   
   handleContextMenu( e )
   {
-    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr, .milkup-yaml-block');
+    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr');
     if( target )
     {
       e.preventDefault();
@@ -75,7 +75,7 @@ class Milkup
   
   handleTouchStart( e )
   {
-    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr, .milkup-yaml-block');
+    const target = e.target.closest('.milkup-link, .milkup-image, .milkup-blockquo, .milkup-table, .milkup-hr');
     if( target )
     {
       this.pressTimer = setTimeout(() => {
@@ -308,43 +308,43 @@ class Milkup
   {
     const lines = this.content.split('\n');
     let html = '';
-    let i = 0;
+    let inYamlFrontMatter = false;
     
-    // Check for YAML front matter at the beginning
-    if( lines[0] && lines[0].trim() === '---' )
+    for( let i = 0; i < lines.length; i++ )
     {
-      // Find the end of YAML front matter
-      let yamlEndIndex = -1;
-      for( let j = 1; j < lines.length; j++ )
+      const line = lines[i];
+      
+      // YAML front matter detection
+      if( line.trim() === '---' )
       {
-        if( lines[j].trim() === '---' )
+        if( i === 0 )
         {
-          yamlEndIndex = j;
-          break;
+          // Start of YAML front matter
+          inYamlFrontMatter = true;
+          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
         }
+        else if( inYamlFrontMatter )
+        {
+          // End of YAML front matter
+          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
+          inYamlFrontMatter = false;
+        }
+        else
+        {
+          // Regular horizontal rule
+          html += this.renderLine( line );
+        }
+        continue;
       }
       
-      if( yamlEndIndex > 0 )
+      // YAML content lines
+      if( inYamlFrontMatter )
       {
-        // Render YAML front matter as a single block
-        const yamlContent = lines.slice(0, yamlEndIndex + 1).join('\n');
-        html += `<div class="milkup-yaml-block" data-original="${this.escapeHtml(yamlContent)}">`;
-        
-        for( let k = 0; k <= yamlEndIndex; k++ )
-        {
-          const cssClass = (k === 0 || k === yamlEndIndex) ? 'milkup-yaml-delimiter' : '';
-          html += `<div class="milkup-yaml-line ${cssClass}">${this.escapeHtml(lines[k])}</div>`;
-        }
-        
-        html += '</div>';
-        i = yamlEndIndex + 1;
+        html += `<div class="milkup-yaml-line">${this.escapeHtml(line)}</div>`;
+        continue;
       }
-    }
-    
-    // Render the rest of the content
-    for( ; i < lines.length; i++ )
-    {
-      html += this.renderLine( lines[i] ) + '\n';
+      
+      html += this.renderLine( line ) + '\n';
     }
     
     this.container.innerHTML = html;
@@ -423,11 +423,6 @@ class Milkup
   
   getElementMarkdown( element )
   {
-    if( element.classList.contains('milkup-yaml-block') )
-    {
-      return element.getAttribute('data-original') || element.textContent;
-    }
-    
     if( element.classList.contains('milkup-link') )
     {
       const href = element.getAttribute('href');
