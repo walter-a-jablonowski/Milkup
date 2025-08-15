@@ -1,0 +1,339 @@
+/* Milkup Editor Styles */
+.milkup-editor
+{
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 400px;
+  outline: none;
+  overflow-wrap: break-word;
+}
+
+.milkup-editor:focus
+{
+  border-color: #007acc;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.1);
+}
+
+/* YAML Front Matter */
+.milkup-yaml-frontmatter
+{
+  background-color: #f5f5dc; /* beige */
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #d4b896;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+/* Headers */
+.milkup-header
+{
+  margin: 20px 0 10px 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.milkup-h1
+{
+  font-size: 2em;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.milkup-h2
+{
+  font-size: 1.5em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.milkup-h3
+{
+  font-size: 1.3em;
+}
+
+.milkup-h4
+{
+  font-size: 1.1em;
+}
+
+.milkup-h5, .milkup-h6
+{
+  font-size: 1em;
+}
+
+/* Text Formatting */
+.milkup-bold
+{
+  font-weight: bold;
+}
+
+.milkup-italic
+{
+  font-style: italic;
+}
+
+.milkup-strikethrough
+{
+  text-decoration: line-through;
+}
+
+.milkup-code
+{
+  background-color: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  color: #d73a49;
+}
+
+/* Links */
+.milkup-link
+{
+  color: #007acc;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.milkup-link:hover
+{
+  border-bottom-color: #007acc;
+}
+
+/* Images */
+.milkup-image
+{
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 10px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Blockquo */
+.milkup-blockquo
+{
+  border-left: 4px solid #007acc;
+  margin: 15px 0;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  color: #666;
+  font-style: italic;
+}
+
+/* Horizontal Rule */
+.milkup-hr
+{
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #ddd, transparent);
+  margin: 30px 0;
+}
+
+/* Lists */
+.milkup-ul, .milkup-ol
+{
+  margin: 15px 0;
+  padding-left: 30px;
+}
+
+.milkup-li
+{
+  margin: 5px 0;
+  list-style: none;
+  position: relative;
+}
+
+.milkup-li[data-indent="0"]
+{
+  margin-left: 0;
+}
+
+.milkup-li[data-indent="2"]
+{
+  margin-left: 20px;
+}
+
+.milkup-li[data-indent="4"]
+{
+  margin-left: 40px;
+}
+
+.milkup-li[data-indent="6"]
+{
+  margin-left: 60px;
+}
+
+/* Paragraphs */
+.milkup-paragraph
+{
+  margin: 15px 0;
+}
+
+/* Tables */
+.milkup-table
+{
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+  border: 1px solid #ddd;
+}
+
+.milkup-table th,
+.milkup-table td
+{
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.milkup-table th
+{
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Context Menu */
+.milkup-context-menu
+{
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 100px;
+}
+
+.milkup-menu-item
+{
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.milkup-menu-item:hover
+{
+  background-color: #f0f0f0;
+}
+
+/* Edit Input */
+.milkup-edit-input
+{
+  font-family: inherit;
+  font-size: inherit;
+  padding: 8px;
+  border: 2px solid #007acc;
+  border-radius: 4px;
+  outline: none;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px)
+{
+  .milkup-editor
+  {
+    padding: 15px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .milkup-h1
+  {
+    font-size: 1.8em;
+  }
+  
+  .milkup-h2
+  {
+    font-size: 1.4em;
+  }
+  
+  .milkup-ul, .milkup-ol
+  {
+    padding-left: 20px;
+  }
+  
+  .milkup-li[data-indent="2"]
+  {
+    margin-left: 15px;
+  }
+  
+  .milkup-li[data-indent="4"]
+  {
+    margin-left: 30px;
+  }
+  
+  .milkup-li[data-indent="6"]
+  {
+    margin-left: 45px;
+  }
+  
+  .milkup-context-menu
+  {
+    min-width: 120px;
+  }
+  
+  .milkup-menu-item
+  {
+    padding: 12px 18px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px)
+{
+  .milkup-editor
+  {
+    padding: 10px;
+  }
+  
+  .milkup-yaml-frontmatter
+  {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .milkup-blockquo
+  {
+    padding: 8px 15px;
+  }
+  
+  .milkup-table th,
+  .milkup-table td
+  {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+/* Print Styles */
+@media print
+{
+  .milkup-editor
+  {
+    border: none;
+    box-shadow: none;
+  }
+  
+  .milkup-context-menu
+  {
+    display: none;
+  }
+  
+  .milkup-edit-input
+  {
+    display: none;
+  }
+}
