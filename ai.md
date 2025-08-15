@@ -11,7 +11,7 @@ Support all usual markdown syntax (also syntax that is widely used but missing i
 - Text formatting (bold, italic, bold and italic, strike)
 - inline code
 
-Beside markdown links also support rendering of normal hyperlinks.
+Beside markdown links also support rendering of normal hyperlinks (URLs).
 
 For basic syntax and code blocks keep the markdown syntax signs visible for edit. When the user changes the syntax, remove or change the rendering.
 
