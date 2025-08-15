@@ -36,7 +36,7 @@ class Milkup
   handleInput( e )
   {
     this.content = this.container.textContent;
-    this.render();
+    this.renderWithCursorPreservation();
     
     if( this.options.autoSave )
     {
@@ -214,6 +214,81 @@ class Milkup
     {
       const grandParentList = grandParentItem.parentElement;
       grandParentList.insertBefore( listItem, grandParentItem.nextSibling );
+    }
+  }
+  
+  renderWithCursorPreservation()
+  {
+    // Save cursor position
+    const selection = window.getSelection();
+    let cursorOffset = 0;
+    
+    if( selection.rangeCount > 0 )
+    {
+      const range = selection.getRangeAt(0);
+      cursorOffset = this.getCursorOffset( range );
+    }
+    
+    // Render content
+    this.render();
+    
+    // Restore cursor position
+    this.setCursorOffset( cursorOffset );
+  }
+  
+  getCursorOffset( range )
+  {
+    let offset = 0;
+    const walker = document.createTreeWalker(
+      this.container,
+      NodeFilter.SHOW_TEXT,
+      null,
+      false
+    );
+    
+    let node;
+    while( node = walker.nextNode() )
+    {
+      if( node === range.startContainer )
+      {
+        return offset + range.startOffset;
+      }
+      offset += node.textContent.length;
+    }
+    
+    return offset;
+  }
+  
+  setCursorOffset( offset )
+  {
+    const walker = document.createTreeWalker(
+      this.container,
+      NodeFilter.SHOW_TEXT,
+      null,
+      false
+    );
+    
+    let currentOffset = 0;
+    let node;
+    
+    while( node = walker.nextNode() )
+    {
+      const nodeLength = node.textContent.length;
+      
+      if( currentOffset + nodeLength >= offset )
+      {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        
+        range.setStart( node, offset - currentOffset );
+        range.collapse( true );
+        
+        selection.removeAllRanges();
+        selection.addRange( range );
+        return;
+      }
+      
+      currentOffset += nodeLength;
     }
   }
   
