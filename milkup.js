@@ -297,7 +297,7 @@ class Milkup
       return `<p class="milkup-paragraph">${this.renderInline(line)}</p>`;
     }
     
-    return '<br>';
+    return '';
   }
   
   renderInline( text )
