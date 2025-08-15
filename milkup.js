@@ -35,6 +35,9 @@ class Milkup
   
   handleInput( e )
   {
+    // Skip if we're in edit mode
+    if( this.container.querySelector('.milkup-edit-input') ) return;
+    
     this.content = this.extractStructuredContent();
     this.renderWithCursorPreservation();
     
@@ -125,36 +128,54 @@ class Milkup
     input.value = markdown;
     input.className = 'milkup-edit-input';
     
+    // Store original element for cancel
+    input._originalElement = element;
+    input._isEditing = true;
+    
     input.addEventListener('keydown', ( e ) => {
       if( e.key === 'Enter' )
       {
-        this.saveEdit( input, element );
+        e.preventDefault();
+        this.saveEdit( input );
       }
       else if( e.key === 'Escape' )
       {
-        this.cancelEdit( input, element );
+        e.preventDefault();
+        this.cancelEdit( input );
       }
     });
     
-    input.addEventListener('blur', () => {
-      this.saveEdit( input, element );
-    });
+    // Remove blur event to prevent premature saves
     
     element.parentNode.replaceChild( input, element );
     input.focus();
     input.select();
   }
   
-  saveEdit( input, originalElement )
+  saveEdit( input )
   {
+    if( ! input._isEditing ) return;
+    
     const newMarkdown = input.value;
-    const newElement = this.parseMarkdown( newMarkdown );
-    input.parentNode.replaceChild( newElement, input );
-    this.updateContent();
+    input._isEditing = false;
+    
+    // Replace input with temporary text node
+    const textNode = document.createTextNode( newMarkdown );
+    input.parentNode.replaceChild( textNode, input );
+    
+    // Trigger full re-render
+    this.content = this.extractStructuredContent();
+    this.render();
   }
   
-  cancelEdit( input, originalElement )
+  cancelEdit( input )
   {
+    if( ! input._isEditing ) return;
+    
+    const originalElement = input._originalElement;
+    input._isEditing = false;
+    
+    // Restore original element
     input.parentNode.replaceChild( originalElement, input );
   }
   
