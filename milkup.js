@@ -459,6 +459,9 @@ class Milkup
   {
     if( ! this.options.saveUrl ) return;
     
+    // Clean content: trim and add single newline at end
+    const cleanContent = this.content.trim() + '\n';
+    
     fetch( this.options.saveUrl, {
       method: 'POST',
       headers: {
@@ -466,7 +469,7 @@ class Milkup
       },
       body: JSON.stringify({
         action: 'save_markdown',
-        content: this.content
+        content: cleanContent
       })
     })
     .then( response => response.json() )
