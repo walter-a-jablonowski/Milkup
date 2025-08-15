@@ -35,7 +35,7 @@ class Milkup
   
   handleInput( e )
   {
-    this.content = this.extractContent();
+    this.content = this.extractStructuredContent();
     this.renderWithCursorPreservation();
     
     if( this.options.autoSave )
@@ -217,35 +217,45 @@ class Milkup
     }
   }
   
-  extractContent()
+  
+  extractStructuredContent()
   {
     let content = '';
-    const yamlBlock = this.container.querySelector('.milkup-yaml-frontmatter');
+    const children = this.container.children;
     
-    if( yamlBlock )
+    for( let i = 0; i < children.length; i++ )
     {
-      // Reconstruct YAML with delimiters
-      content = '---\n' + yamlBlock.textContent + '\n---\n';
+      const child = children[i];
       
-      // Get remaining content after YAML block
-      const walker = document.createTreeWalker(
-        this.container,
-        NodeFilter.SHOW_TEXT,
-        node => yamlBlock.contains(node) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
-      );
-      
-      let node;
-      while( node = walker.nextNode() )
+      if( child.classList.contains('milkup-yaml-line') )
       {
-        content += node.textContent;
+        // YAML line - preserve as is with newline
+        content += child.textContent + '\n';
+      }
+      else
+      {
+        // Regular content - use textContent
+        content += child.textContent + '\n';
       }
     }
-    else
+    
+    // Handle any remaining text nodes
+    const walker = document.createTreeWalker(
+      this.container,
+      NodeFilter.SHOW_TEXT,
+      node => {
+        // Only include text nodes that are direct children or not in structured elements
+        return node.parentElement === this.container ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    );
+    
+    let node;
+    while( node = walker.nextNode() )
     {
-      content = this.container.textContent;
+      content += node.textContent;
     }
     
-    return content;
+    return content.trim();
   }
   
   renderWithCursorPreservation()
@@ -328,29 +338,45 @@ class Milkup
     const lines = this.content.split('\n');
     let html = '';
     let inYamlFrontMatter = false;
-    let yamlContent = '';
+    let yamlStartFound = false;
+    
+    // Check if content starts with YAML front matter
+    if( lines.length > 0 && lines[0].trim() === '---' )
+    {
+      yamlStartFound = true;
+    }
     
     for( let i = 0; i < lines.length; i++ )
     {
       const line = lines[i];
       
       // YAML front matter detection
-      if( i === 0 && line.trim() === '---' )
+      if( line.trim() === '---' )
       {
-        inYamlFrontMatter = true;
+        if( i === 0 && yamlStartFound )
+        {
+          // Start of YAML front matter
+          inYamlFrontMatter = true;
+          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
+        }
+        else if( inYamlFrontMatter )
+        {
+          // End of YAML front matter
+          html += `<div class="milkup-yaml-line milkup-yaml-delimiter">---</div>`;
+          inYamlFrontMatter = false;
+        }
+        else
+        {
+          // Regular horizontal rule
+          html += this.renderLine( line );
+        }
         continue;
       }
       
+      // YAML content lines
       if( inYamlFrontMatter )
       {
-        if( line.trim() === '---' )
-        {
-          html += `<div class="milkup-yaml-frontmatter" contenteditable="true">${this.escapeHtml(yamlContent.trim())}</div>`;
-          inYamlFrontMatter = false;
-          yamlContent = '';
-          continue;
-        }
-        yamlContent += line + '\n';
+        html += `<div class="milkup-yaml-line">${this.escapeHtml(line)}</div>`;
         continue;
       }
       
