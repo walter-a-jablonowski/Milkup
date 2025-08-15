@@ -1,7 +1,4 @@
 
-- Link editing
-- Data persistence
-
 I want to write a reusable markdown editor library in javascript that support live rendering in place while the user is editing.
 
 When the user typed a markdown syntax the editor component renders it immediately in HTML using the appropriate html tags.
@@ -29,6 +26,11 @@ We also support displaying yml front matter with different background color and 
 Apply a class "milkup" to each rendered tag that can be used to modify the style with a user defined stylesheet.
 
 Make it look good on all devices.
+
+### Data loading and persistence
+
+- Loading: the server prints the data in a html tag on page load (ususally using PHP)
+- Saving: use ajax and PHP on the server to save the data
 
 ### Demo
 
