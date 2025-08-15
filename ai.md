@@ -15,11 +15,14 @@ Beside markdown links also support rendering of normal hyperlinks.
 
 For basic syntax and code blocks keep the markdown syntax signs visible for edit. When the user changes the syntax, remove or change the rendering.
 
-For links, images, blockquo, tables, horizontal rule: These elements don't show the markdown syntax but are replaced by the markdown syntax for edit when the user clicks in it. Use left click for all but links. For links edit can be activated with right click.
+For links, images, blockquo, tables, horizontal rule: These elements don't show the markdown syntax but are replaced by the markdown syntax for edit:
+
+- on desktop: use a custom context menu
+- on tablet or smartphone: use long press
 
 List editing: Make tab and shift tab usable to indent or unindent list items.
 
-We also support displaying yml front matter with different background color and a monospace font.
+We also support displaying yml front matter with different background color (beige) and a monospace font.
 
 ### UI and style
 
